@@ -11,12 +11,8 @@ class BigInt {
   ~BigInt();
   BigInt& operator=(const BigInt&);
   BigInt operator+(const BigInt&);
-  BigInt operator*(const BigInt&);
   void Set(const char*);
   void Print();
-  BigInt Power(int);
-  BigInt Inverse();
-  BigInt Modulo(const BigInt&);
 
  private:
   void Resize(size_t);
