@@ -65,7 +65,7 @@ void BigInt::Set(const char* str) {
 
 void BigInt::Print() {
   for (int i = length_ - 1; 0 <= i; --i) {
-    printf("%08x", data_[i]);
+    printf("%08X", data_[i]);
   }
   printf("\n");
 }
