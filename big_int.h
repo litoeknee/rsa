@@ -6,8 +6,9 @@ class BigInt {
  public:
   BigInt();
   BigInt(size_t);
-  ~BigInt();
+  BigInt(const char*);
   BigInt(const BigInt&);
+  ~BigInt();
   BigInt& operator=(const BigInt&);
   BigInt operator+(const BigInt&);
   BigInt operator*(const BigInt&);
@@ -20,7 +21,7 @@ class BigInt {
  private:
   void Resize(size_t);
   void Shrink();
-  uint32_t* data_;
   size_t length_;
+  uint32_t* data_;
 };
 
