@@ -5,6 +5,8 @@ int main() {
   BigInt a("ABCDB768238238976478CBDBCB209338498723987CBDFACCABBCC");
   BigInt b("BBCDE2232874BBCCDDAACCBBFEFEF2272312304213487698");
   c = a + b;
+  a.Print();
+  b.Print();
   c.Print();
   return 0;
 }

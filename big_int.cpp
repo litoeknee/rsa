@@ -9,86 +9,75 @@ inline size_t Max(size_t a, size_t b) {
   return (a < b) ? b : a;
 }
 
-inline size_t FloorDivide(size_t a, size_t b) {
-  return (a + b - 1) / b;
+BigInt::BigInt(): sign_(false) {
 }
 
-BigInt::BigInt(): length_(1), data_(new uint32_t[length_]) {
-  memset(data_, 0, length_ * sizeof(uint32_t));
+BigInt::BigInt(const char* s): sign_(false) {
+  FromString(s);
 }
 
-BigInt::BigInt(size_t s): length_(s), data_(new uint32_t[length_]) {
-  memset(data_, 0, length_ * sizeof(uint32_t));
-}
-
-BigInt::BigInt(const char* s): length_(FloorDivide(strlen(s), 8)), data_(new uint32_t[length_]) {
-  Set(s);
-}
-
-BigInt::BigInt(const BigInt& b): length_(b.length_), data_(new uint32_t[length_]) {
-  memcpy(data_, b.data_, length_ * sizeof(uint32_t));
+BigInt::BigInt(const BigInt& b): sign_(b.sign_), data_(b.data_) {
 }
 
 BigInt::~BigInt() {
-  delete[] data_;
 }
 
 BigInt& BigInt::operator=(const BigInt& b) {
   if (&b == this) {
     return *this;
   }
-  Resize(b.length_);
-  memcpy(data_, b.data_, length_ * sizeof(uint32_t));
+  data_ = b.data_;
+  sign_ = b.sign_;
   return *this;
 }
 
 BigInt BigInt::operator+(const BigInt& b) {
-  BigInt ret(Max(length_, b.length_) + 1);
-  for (size_t i = 0; i < ret.length_; ++i) {
-    uint64_t tmp = (uint64_t) data_[i] + b.data_[i];
-    ret.data_[i] += tmp & 0xFFFFFFFF;
-    ret.data_[i + 1] = tmp >> 32;
+  BigInt ret;
+  size_t length = Max(data_.size(), b.data_.size()) + 1;
+  uint64_t carry = 0;
+  ret.data_.resize(length);
+  for (size_t i = 0; i < length; ++i) {
+    carry += At(i) + b.At(i);
+    ret.data_[i] = carry & 0xFFFFFFFF;
+    carry >>= 32;
   }
   ret.Shrink();
   return ret;
 }
 
-void BigInt::Set(const char* str) {
+void BigInt::FromString(const char* str) {
   size_t len = strlen(str);
+  size_t length = (len + 7) / 8;
   char tmp[9];
   tmp[8] = 0;
-  Resize(FloorDivide(len, 8));
-  for (size_t i = 0; i < length_ - 1; ++i) {
+  data_.clear();
+  for (size_t i = 0; i < length - 1; ++i) {
     strncpy(tmp, &str[len - (i + 1) * 8], 8);
-    data_[i] = strtol(tmp, 0, 16);
+    data_.push_back(strtol(tmp, 0, 16));
   }
   memset(tmp, 0, sizeof(tmp));
-  strncpy(tmp, str, len - (length_ - 1) * 8);
-  data_[length_ - 1] = strtol(tmp, 0, 16);
+  strncpy(tmp, str, len - (length - 1) * 8);
+  data_.push_back(strtol(tmp, 0, 16));
+  Shrink();
 }
 
 void BigInt::Print() {
-  for (int i = length_ - 1; 0 <= i; --i) {
-    printf("%08X", data_[i]);
+  for (auto i = data_.rbegin(); i != data_.rend(); ++i) {
+    printf("%08X", *i);
   }
   printf("\n");
 }
 
-void BigInt::Resize(size_t s) {
-  if (length_ != s) {
-    delete[] data_;
-    length_ = s;
-    data_ = new uint32_t[length_];
+uint32_t BigInt::At(size_t pos) const {
+  if (data_.size() <= pos) {
+    return 0;
   }
-  memset(data_, 0, length_ * sizeof(uint32_t));
+  return data_[pos];
 }
 
 void BigInt::Shrink() {
-  while (data_[length_ - 1] == 0) {
-    --length_;
-  }
-  if (!length_) {
-    ++length_;
+  while (data_.size() && !data_.back()) {
+    data_.pop_back();
   }
 }
 
