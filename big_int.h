@@ -12,6 +12,10 @@ class BigInt {
   BigInt& operator=(const BigInt&);
   BigInt operator+(const BigInt&);
   BigInt operator-(const BigInt&);
+  bool operator<(const BigInt&) const;
+  bool operator>(const BigInt&) const;
+  bool operator==(const BigInt&) const;
+  bool operator!=(const BigInt&) const;
   void FromString(const char*);
   void Print();
 

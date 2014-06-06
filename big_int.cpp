@@ -45,6 +45,64 @@ BigInt BigInt::operator+(const BigInt& b) {
   return ret;
 }
 
+bool BigInt::operator<(const BigInt& b) const {
+  if (sign_ != b.sign_) {
+    return sign_;
+  }
+  if (data_.size() < b.data_.size()) {
+    return !sign_;
+  }
+  if (b.data_.size() < data_.size()) {
+    return sign_;
+  }
+  for (size_t i = data_.size() - 1; 0 <= i; --i) {
+    if (data_[i] < b.data_[i]) {
+      return !sign_;
+    }
+    if (b.data_[i] < data_[i]) {
+      return sign_;
+    }
+  }
+  return false;
+}
+
+bool BigInt::operator>(const BigInt& b) const {
+  if (sign_ != b.sign_) {
+    return !sign_;
+  }
+  if (data_.size() < b.data_.size()) {
+    return sign_;
+  }
+  if (b.data_.size() < data_.size()) {
+    return !sign_;
+  }
+  for (size_t i = data_.size() - 1; 0 <= i; --i) {
+    if (data_[i] < b.data_[i]) {
+      return sign_;
+    }
+    if (b.data_[i] < data_[i]) {
+      return !sign_;
+    }
+  }
+  return false;
+}
+
+bool BigInt::operator==(const BigInt& b) const {
+  if (sign_ != b.sign_ || data_.size() != b.data_.size()) {
+    return false;
+  }
+  for (size_t i = data_.size() - 1; 0 <= i; --i) {
+    if (data_[i] != b.data_[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool BigInt::operator!=(const BigInt& b) const {
+  return !(*this == b);
+}
+
 void BigInt::FromString(const char* str) {
   size_t len = strlen(str);
   size_t length = (len + 7) / 8;
