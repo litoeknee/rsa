@@ -10,8 +10,8 @@ class BigInt {
   BigInt(const BigInt&);
   ~BigInt();
   BigInt& operator=(const BigInt&);
-  BigInt operator+(const BigInt&);
-  BigInt operator-(const BigInt&);
+  BigInt operator+(const BigInt&) const;
+  BigInt operator-(const BigInt&) const;
   bool operator<(const BigInt&) const;
   bool operator>(const BigInt&) const;
   bool operator==(const BigInt&) const;
@@ -20,11 +20,15 @@ class BigInt {
   void Print();
 
  private:
-  void Shrink();
-  uint32_t At(size_t) const;
   bool sign_;
   std::vector<uint32_t> data_;
 };
 
 size_t Max(size_t, size_t);
+uint64_t At(const std::vector<uint32_t>&, size_t);
+void AbsAdd(std::vector<uint32_t>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&);
+void AbsSub(std::vector<uint32_t>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&);
+int AbsCompare(const std::vector<uint32_t>&, const std::vector<uint32_t>&);
+void AbsBitwiseNot(std::vector<uint32_t>&);
+void Shrink(std::vector<uint32_t>&);
 
