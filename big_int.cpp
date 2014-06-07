@@ -72,12 +72,6 @@ BigInt BigInt::operator%(const BigInt& b) const {
     return ret;
   }
   size_t shift = ret.Bits() - divider.Bits();
-  // if (shift < 2) {
-  //   while (divider <= ret) {
-  //     ret = ret - divider;
-  //   }
-  //   return ret;
-  // }
   divider = divider << shift;
   while (shift) {
     if (divider <= ret) {
@@ -220,12 +214,7 @@ BigInt BigInt::MontgomeryMult(const BigInt& a, const BigInt& m, size_t n) {
     adder = adder << 1;
   }
   c = c >> n;
-  // while (m <= c) {
-  //   c = c - m;
-  // }
-  // printf("before\n");
   c = c % m;
-  // printf("after\n");
   return c;
 }
 
