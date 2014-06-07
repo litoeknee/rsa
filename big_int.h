@@ -8,6 +8,7 @@ typedef std::vector<uint32_t> Slice;
 class BigInt {
  public:
   BigInt();
+  BigInt(uint32_t);
   BigInt(const char*);
   BigInt(const BigInt&);
   ~BigInt();
@@ -15,16 +16,19 @@ class BigInt {
   BigInt operator+(const BigInt&) const;
   BigInt operator-(const BigInt&) const;
   BigInt operator*(const BigInt&) const;
-  // BigInt operator%(const BigInt&) const;
-  // BigInt operator/(const BigInt&) const;
+  BigInt operator%(const BigInt&) const;
   BigInt operator<<(size_t) const;
+  BigInt operator>>(size_t) const;
   bool operator<(const BigInt&) const;
   bool operator>(const BigInt&) const;
   bool operator<=(const BigInt&) const;
   bool operator>=(const BigInt&) const;
   bool operator==(const BigInt&) const;
   bool operator!=(const BigInt&) const;
-  BigInt Montgomery(const BigInt&, const BigInt&, size_t);
+  bool BitAt(size_t) const;
+  size_t Bits() const;
+  BigInt MontgomeryMult(const BigInt&, const BigInt&, size_t);
+  BigInt MontgomeryExp(const BigInt&, const BigInt&);
   void FromString(const char*);
   void Print();
 
