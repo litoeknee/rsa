@@ -4,6 +4,7 @@
 #include <vector>
 
 typedef std::vector<uint32_t> Slice;
+// TODO replace everything with slice; add in-place versions
 
 class BigInt {
  public:
