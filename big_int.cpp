@@ -53,6 +53,13 @@ BigInt BigInt::operator-(const BigInt& b) const {
   return *this + ret;
 }
 
+BigInt BigInt::operator*(const BigInt& b) const {
+  BigInt ret;
+  ret.sign_ = !(sign_ == b.sign_);
+  AbsMult(ret.data_, data_, b.data_);
+  return ret;
+}
+
 bool BigInt::operator<(const BigInt& b) const {
   if (sign_ != b.sign_) {
     return sign_;
@@ -132,8 +139,12 @@ void BigInt::Print() {
   if (sign_) {
     printf("-");
   }
-  for (auto i = data_.rbegin(); i != data_.rend(); ++i) {
-    printf("%08X", *i);
+  if (!data_.size()) {
+    printf("%08X", 0);
+  } else {
+    for (auto i = data_.rbegin(); i != data_.rend(); ++i) {
+      printf("%08X", *i);
+    }
   }
   printf("\n");
 }
@@ -150,14 +161,9 @@ uint64_t At(const vector<uint32_t>& v, size_t pos) {
 }
 
 void AbsAdd(vector<uint32_t>& res, const vector<uint32_t>& a, const vector<uint32_t>& b) {
-  size_t length = Max(a.size(), b.size()) + 1;
-  uint64_t carry = 0;
-  res.resize(length);
-  for (size_t i = 0; i < length; ++i) {
-    carry += At(a, i) + At(b, i);
-    res[i] = carry & 0xFFFFFFFF;
-    carry >>= 32;
-  }
+  res = a;
+  res.resize(Max(a.size(), b.size()) + 1);
+  Axpy(res, 1, b, 0);
   Shrink(res);
 }
 
@@ -166,16 +172,28 @@ void AbsSub(vector<uint32_t>& res, const vector<uint32_t>& a, const vector<uint3
     AbsSub(res, b, a);
   }
   vector<uint32_t> neg = b, comp;
-  while (neg.size() < a.size()) {
-    neg.push_back(0);
-  }
+  neg.resize(a.size(), 0);
   AbsBitwiseNot(neg);
   AbsAdd(comp, neg, vector<uint32_t>{1});
   comp.resize(a.size());
   AbsAdd(res, comp, a);
-  if (res.size()) {
+  if (res.size() && res.back() == 1) {
     res.pop_back();
   }
+}
+
+void AbsMult(Slice& res, const Slice& a, const Slice& b) {
+  Slice tmp;
+  size_t size = a.size() * b.size();
+  res.clear();
+  res.resize(size, 0);
+  for (size_t i = 0; i < b.size(); ++i) {
+    tmp = a;
+    tmp.resize(size, 0);
+    Axpy(tmp, b[i], Slice{0}, 0);
+    Axpy(res, 1, tmp, i);
+  }
+  Shrink(res);
 }
 
 int AbsCompare(const vector<uint32_t>& a, const vector<uint32_t>& b) {
@@ -205,6 +223,17 @@ void AbsBitwiseNot(std::vector<uint32_t>& a) {
 void Shrink(vector<uint32_t>& v) {
   while (v.size() && !v.back()) {
     v.pop_back();
+  }
+}
+
+// x = a * x + y
+void Axpy(Slice& x, uint32_t a, const Slice& y, size_t base) {
+  size_t length = x.size();
+  uint64_t carry = 0;
+  for (size_t i = base; i < length; ++i) {
+    carry += a * At(x, i) + At(y, i - base);
+    x[i] = carry & 0xFFFFFFFF;
+    carry >>= 32;
   }
 }
 
