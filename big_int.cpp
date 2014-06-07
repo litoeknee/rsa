@@ -60,6 +60,35 @@ BigInt BigInt::operator*(const BigInt& b) const {
   return ret;
 }
 
+/*
+BigInt BigInt::operator%(const BigInt& b) const {
+  BigInt ret(*this);
+  while (b < ret) {
+    ret = ret - b;
+  }
+  return ret;
+}
+
+BigInt BigInt::operator/(const BigInt& b) const {
+  BigInt tmp(*this), ret;
+  while (b < tmp) {
+    tmp = tmp - b;
+    ret = ret + BigInt("1");
+  }
+  return ret;
+}
+*/
+
+BigInt BigInt::operator<<(size_t s) const {
+  BigInt ret(*this);
+  size_t whole = s / 32;
+  ret.data_.insert(ret.data_.begin(), whole, 0);
+  ret.data_.push_back(0);
+  Axpy(ret.data_, 1 << (s % 32), Slice{0}, 0);
+  Shrink(ret.data_);
+  return ret;
+}
+
 bool BigInt::operator<(const BigInt& b) const {
   if (sign_ != b.sign_) {
     return sign_;
@@ -101,6 +130,14 @@ bool BigInt::operator>(const BigInt& b) const {
       return false;
   }
   return false;
+}
+
+bool BigInt::operator<=(const BigInt& b) const {
+  return !(b < *this);
+}
+
+bool BigInt::operator>=(const BigInt& b) const {
+  return !(*this < b);
 }
 
 bool BigInt::operator==(const BigInt& b) const {

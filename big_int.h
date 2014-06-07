@@ -15,10 +15,16 @@ class BigInt {
   BigInt operator+(const BigInt&) const;
   BigInt operator-(const BigInt&) const;
   BigInt operator*(const BigInt&) const;
+  // BigInt operator%(const BigInt&) const;
+  // BigInt operator/(const BigInt&) const;
+  BigInt operator<<(size_t) const;
   bool operator<(const BigInt&) const;
   bool operator>(const BigInt&) const;
+  bool operator<=(const BigInt&) const;
+  bool operator>=(const BigInt&) const;
   bool operator==(const BigInt&) const;
   bool operator!=(const BigInt&) const;
+  BigInt Montgomery(const BigInt&, const BigInt&, size_t);
   void FromString(const char*);
   void Print();
 

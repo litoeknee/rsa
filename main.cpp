@@ -13,6 +13,8 @@ int main() {
   c.Print();
   c = a * b;
   c.Print();
+  BigInt d = a / b;
+  d.Print();
   return 0;
 }
 
