@@ -85,11 +85,15 @@
 
 首先需要实现大整数运算.定义类`BigInt`,详见文件`big_int.h`和`big_int.cpp`.
 
-使用`uint32_t`的向量存储数据,根据需要自动增长缩短.再添加一个符号位表示正负.
+`BigInt`使用`vector<uint32_t>`存储数据,根据需要自动增长缩短,并添加一个符号位表示正负.在实际使用中,由于`vector`的拷贝会带来额外开销.经过`gprof`测试,大部分时间都花在了`vector`的拷贝操作上.如果为了更高性能,可以考虑直接使用数组实现.
 
-然后根据这些基本数据结构实现加减乘除等运算.再实现了比较器.最后实现Montgomery模乘和其上的幂模运算.
+根据这些基本数据结构实现加减乘除等运算.按照`BLAS`的模式先实现函数`Axpy`完成$$x=ax+y$$的计算.注意可以提供额外参数`base`表示$$x$$和$$y$$具体的对齐方式,为乘法做准备.有了`Axpy`就可以实现`vector<uint32_t>`上的加法减法和乘法等操作.对于`BigInt`的算术操作,需要额外注意正负号带来的影响,其余均调用`vector<uint32_t>`上的算术操作即可.
 
-这些工作看起来很简单,但是却耗费了最多的时间,总共达到400多行代码,均独立完成,唯一参考过一篇详细描述Montomery的文章[Understanding the Montgomery reduction algorithm](http://alicebob.cryptoland.net/understanding-the-montgomery-reduction-algorithm/).
+最后实现Montgomery模乘和其上的模幂运算.要得到Montgomery数,只需对其与$$R^{2}$$进行Montgomery模乘即可.要还原一个Montgomery数,只需对其与$$1$$进行Montgomery模乘.
+
+Montgomery模幂运算使用Montgomery模乘和快速幂算法.对于指数$$e$$,仅需$$\log_{2}{e}$$次运算.
+
+这些工作看起来很简单,但是却耗费了最多的时间,总共达到400多行代码,并且均是独立完成.参考文献为一篇详细描述Montgomery算法的文章[Understanding the Montgomery reduction algorithm](http://alicebob.cryptoland.net/understanding-the-montgomery-reduction-algorithm/).
 
 ## 加密和解密
 
@@ -122,9 +126,11 @@ $$C=M^{e}\mod n.$$
 解密即求
 $$P=C^{d}\mod n.$$
 
-此时底数和幂都很大了,无法再用Python计算,并且用自己实现的大整数计算也要1分多钟的时间.最后得到的结果为`0x0558`,确实是之前设定的明文.
+此时底数和幂都很大了,无法再用Python计算.最后得到的结果为`0x0558`,确实是之前设定的明文.
 
 如此证明了加密和解密算法是正确的.
+
+加密的时候可以瞬间得到结果,测试的时候解密耗时$$20$$秒.如果能用指针替代`vector<uint32_t>`,至少可以缩短一半的时间.
 
 ## 实验总结
 
