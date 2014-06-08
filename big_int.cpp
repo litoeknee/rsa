@@ -237,7 +237,6 @@ BigInt BigInt::MontgomeryExp(const BigInt& e, const BigInt& m) {
   BigInt base = this->MontgomeryMult(r, m, r_bits);
   BigInt ret = BigInt(1).MontgomeryMult(r, m, r_bits);
   for (int i = e.Bits() - 1; 0 <= i; --i) {
-    printf("got %d\n", i);
     ret = ret.MontgomeryMult(ret, m, r_bits);
     if (e.BitAt(i)) {
       ret = ret.MontgomeryMult(base, m, r_bits);
@@ -351,7 +350,7 @@ void Shrink(Slice& v) {
   }
 }
 
-// Compute $x = a * x + y$. `base` is for alignment of `x` and `y`.
+// Compute $x = ax + y$. `base` is for alignment of `x` and `y`.
 void Axpy(Slice& x, uint32_t a, const Slice& y, size_t base) {
   size_t length = x.size();
   uint64_t carry = 0;
