@@ -4,7 +4,6 @@
 #include <vector>
 
 typedef std::vector<uint32_t> Slice;
-// TODO add in-place versions
 
 class BigInt {
  public:
@@ -19,6 +18,7 @@ class BigInt {
   BigInt operator*(const BigInt&) const;
   BigInt operator%(const BigInt&) const;
   BigInt operator<<(size_t) const;
+  BigInt& operator<<=(size_t);
   BigInt operator>>(size_t) const;
   bool operator<(const BigInt&) const;
   bool operator>(const BigInt&) const;

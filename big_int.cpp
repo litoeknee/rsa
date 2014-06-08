@@ -88,12 +88,17 @@ BigInt BigInt::operator%(const BigInt& b) const {
 
 BigInt BigInt::operator<<(size_t s) const {
   BigInt ret(*this);
-  size_t whole = s / 32;
-  ret.data_.insert(ret.data_.begin(), whole, 0);
-  ret.data_.push_back(0);
-  Axpy(ret.data_, 1 << (s % 32), Slice{0}, 0);
-  Shrink(ret.data_);
+  ret <<= s;
   return ret;
+}
+
+BigInt& BigInt::operator<<=(size_t s) {
+  size_t whole = s / 32;
+  data_.insert(data_.begin(), whole, 0);
+  data_.push_back(0);
+  Axpy(data_, 1 << (s % 32), Slice{0}, 0);
+  Shrink(data_);
+  return (*this);
 }
 
 BigInt BigInt::operator>>(size_t s) const {
@@ -211,7 +216,7 @@ BigInt BigInt::MontgomeryMult(const BigInt& a, const BigInt& m, size_t n) {
     if (c.BitAt(i)) {
       c = c + adder;
     }
-    adder = adder << 1;
+    adder <<= 1;
   }
   c = c >> n;
   c = c % m;
@@ -228,7 +233,7 @@ BigInt BigInt::MontgomeryExp(const BigInt& e, const BigInt& m) {
   }
   r_bits += 32 * (m.data_.size() - 1);
   BigInt r("1");
-  r = r << (2 * r_bits);
+  r <<= (2 * r_bits);
   BigInt base = this->MontgomeryMult(r, m, r_bits);
   BigInt ret = BigInt(1).MontgomeryMult(r, m, r_bits);
   for (int i = e.Bits() - 1; 0 <= i; --i) {
@@ -346,7 +351,7 @@ void Shrink(Slice& v) {
   }
 }
 
-// Compute x = a * x + y
+// Compute $x = a * x + y$. `base` is for alignment of `x` and `y`.
 void Axpy(Slice& x, uint32_t a, const Slice& y, size_t base) {
   size_t length = x.size();
   uint64_t carry = 0;
