@@ -275,28 +275,28 @@ inline size_t Max(size_t a, size_t b) {
   return (a < b) ? b : a;
 }
 
-uint64_t At(const vector<uint32_t>& v, size_t pos) {
+uint64_t At(const Slice& v, size_t pos) {
   if (v.size() <= pos) {
     return 0;
   }
   return v[pos];
 }
 
-void AbsAdd(vector<uint32_t>& res, const vector<uint32_t>& a, const vector<uint32_t>& b) {
+void AbsAdd(Slice& res, const Slice& a, const Slice& b) {
   res = a;
   res.resize(Max(a.size(), b.size()) + 1);
   Axpy(res, 1, b, 0);
   Shrink(res);
 }
 
-void AbsSub(vector<uint32_t>& res, const vector<uint32_t>& a, const vector<uint32_t>& b) {
+void AbsSub(Slice& res, const Slice& a, const Slice& b) {
   if (AbsCompare(a, b) == 1) {
     AbsSub(res, b, a);
   }
-  vector<uint32_t> neg = b, comp;
+  Slice neg = b, comp;
   neg.resize(a.size(), 0);
   AbsBitwiseNot(neg);
-  AbsAdd(comp, neg, vector<uint32_t>{1});
+  AbsAdd(comp, neg, Slice{1});
   res = a;
   Axpy(res, 1, comp, 0);
   Shrink(res);
@@ -316,7 +316,7 @@ void AbsMult(Slice& res, const Slice& a, const Slice& b) {
   Shrink(res);
 }
 
-int AbsCompare(const vector<uint32_t>& a, const vector<uint32_t>& b) {
+int AbsCompare(const Slice& a, const Slice& b) {
   if (a.size() < b.size()) {
     return 1;
   }
@@ -334,13 +334,13 @@ int AbsCompare(const vector<uint32_t>& a, const vector<uint32_t>& b) {
   return 0;
 }
 
-void AbsBitwiseNot(std::vector<uint32_t>& a) {
+void AbsBitwiseNot(Slice& a) {
   for (auto& i: a) {
     i = ~i;
   }
 }
 
-void Shrink(vector<uint32_t>& v) {
+void Shrink(Slice& v) {
   while (v.size() && !v.back()) {
     v.pop_back();
   }

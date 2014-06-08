@@ -4,7 +4,7 @@
 #include <vector>
 
 typedef std::vector<uint32_t> Slice;
-// TODO replace everything with slice; add in-place versions
+// TODO add in-place versions
 
 class BigInt {
  public:
@@ -35,16 +35,16 @@ class BigInt {
 
  private:
   bool sign_;
-  std::vector<uint32_t> data_;
+  Slice data_;
 };
 
 size_t Max(size_t, size_t);
-uint64_t At(const std::vector<uint32_t>&, size_t);
-void AbsAdd(std::vector<uint32_t>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&);
-void AbsSub(std::vector<uint32_t>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&);
+uint64_t At(const Slice&, size_t);
+void AbsAdd(Slice&, const Slice&, const Slice&);
+void AbsSub(Slice&, const Slice&, const Slice&);
 void AbsMult(Slice&, const Slice&, const Slice&);
-int AbsCompare(const std::vector<uint32_t>&, const std::vector<uint32_t>&);
-void AbsBitwiseNot(std::vector<uint32_t>&);
-void Shrink(std::vector<uint32_t>&);
+int AbsCompare(const Slice&, const Slice&);
+void AbsBitwiseNot(Slice&);
+void Shrink(Slice&);
 void Axpy(Slice&, uint32_t, const Slice&, size_t);
 
